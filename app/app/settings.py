@@ -74,10 +74,19 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+# Database
+DTABASE_ENGINE = 'django.db.backends.postgresql'
+DTABASE_NAME = os.getenv('DB_NAME')
+DTABASE_USER = os.getenv('DB_USER')
+DTABASE_PASSWORD = os.getenv('DB_PASS')
+DTABASE_HOST = os.getenv('DB_HOST')
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': DTABASE_ENGINE,
+        'NAME': DTABASE_NAME,
+        'USER': DTABASE_USER,
+        'PASSWORD': DTABASE_PASSWORD,
+        'HOST': DTABASE_HOST
     }
 }
 
