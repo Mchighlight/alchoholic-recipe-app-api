@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
@@ -6,6 +7,7 @@ from core import models
 def sample_user(email='test@gmail.com', password='test1234'):
     """create a sample user"""
     return get_user_model().objects.create_user(email, password)
+
 class ModelTests(TestCase):
 
     '''
@@ -23,7 +25,7 @@ class ModelTests(TestCase):
         self.assertTrue(user.check_password(password))
     '''
 
-    def test_new_user_email_normalized(self) :
+    def test_new_user_email_normalized(self):
         """Test the email for a new user is normalize"""
         email = 'test@GMAIL.COM'
         user = get_user_model().objects.create_user(email, 'test1234')
@@ -45,32 +47,41 @@ class ModelTests(TestCase):
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
-    def test_tag_str(self) :
+    def test_tag_str(self):
         """Test the tag string representation"""
         tag = models.Tag.objects.create(
-            user = sample_user(),
-            name = 'Alcoholic'
+            user=sample_user(),
+            name='Alcoholic'
         )
 
-        self.assertEqual( str(tag), tag.name )
-    
+        self.assertEqual(str(tag), tag.name)
+
     def test_ingredient_str(self):
         """Test the ingredient string representation"""
         ingredient = models.Ingredient.objects.create(
-            user = sample_user(),
-            name = "jack daniel"
+            user=sample_user(),
+            name="jack daniel"
         )
 
-        self.assertEqual( str(ingredient), ingredient.name )
+        self.assertEqual(str(ingredient), ingredient.name)
 
     def test_recipe_str(self):
         """Test the recipe strin represenation"""
         recipe = models.Recipe.objects.create(
             user=sample_user(),
-            title= 'Fresh Lemond and white pirate Rum',
-            price= 6.00,
-            time_minutes = 5
+            title='Fresh Lemond and white pirate Rum',
+            price=6.00,
+            time_minutes=5
         )
 
-        self.assertEqual(str(recipe), recipe.title )
+        self.assertEqual(str(recipe), recipe.title)
 
+    @patch('uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid):
+        """Test taht image is saved in the conrrect location"""
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        file_path = models.recipe_image_file_path(None, 'my_image.jpg')
+
+        exp_path = f'uploads/recipe/{uuid}.jpg'
+        self.assertEqual(file_path, exp_path)
